@@ -10,7 +10,8 @@ class EscapeState(State):
     pass 
 class UpdateState(State):
     pass
-
+class OtherState(State):    
+    pass
 
 class StateHandler(tcod.event.EventDispatch[State]):
 
@@ -32,6 +33,9 @@ class StateHandler(tcod.event.EventDispatch[State]):
         if key == tcod.event.K_UP:
             action = UpdateState()
         
+        if key == tcod.event.K_DOWN:
+            action = OtherState()
+        
         #the escape key
         elif key == tcod.event.K_ESCAPE:
             action = EscapeState()
@@ -49,15 +53,17 @@ def map_render(console, map):
         pos_x, *rest, pos_y = pos
         #a value of 1 sets it as a 'wall' while a 0 makes it a 'floor'
         if value == 1:
-            tile_gr = "#"
+            tile_gr = " "
+            color = (255,255,255)
         else:
-            tile_gr = "."
-        console.print(x = pos_x - 1, y = pos_y - 1, string = tile_gr)
+            tile_gr = " "
+            color = (0,0,0)
+        console.print(x = pos_x - 1 , y = pos_y - 1 , string = tile_gr, bg = color)
 
 def main():
-    map = startmap(82,52,47)
-    screen_width = 80
-    screen_height = 50
+    map = startmap(102,62,42)
+    screen_width = 100
+    screen_height = 60
     tileset = tcod.tileset.load_tilesheet(
         "dejavu10x10_gs_tc.png", 32, 8, tcod.tileset.CHARMAP_TCOD
     )
@@ -84,8 +90,9 @@ def main():
                     continue
                     
                 if isinstance(action,UpdateState):
-                    update(5,1,map)
-                    
+                    update(4,3,map, 0)
+                elif isinstance(action, OtherState):
+                    update(3,6,map, 1)
                     
                 elif isinstance(action,EscapeState):
                     raise SystemExit()
